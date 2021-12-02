@@ -1,5 +1,7 @@
 package io.github.asewhy.support.base;
 
+import io.github.asewhy.support.exceptions.ProcessorException;
+
 import java.util.Arrays;
 
 public abstract class BaseXmlMacrosProcessor extends BaseDocxProcessor {
@@ -15,7 +17,7 @@ public abstract class BaseXmlMacrosProcessor extends BaseDocxProcessor {
      * @param to индекс по который нужно вырезать кусок
      * @return вырезка байтов без тегов
      */
-    protected static byte[] stripTags(byte[] input, int from, int to) {
+    protected static byte[] stripTags(byte[] input, int from, int to) throws ProcessorException {
         byte[] buffer = new byte[] {};
         boolean inTagRem = false;
         int index = Math.max(from, 0) - 1,
@@ -41,6 +43,10 @@ public abstract class BaseXmlMacrosProcessor extends BaseDocxProcessor {
 
                 buffer[bufferIndex++] = current;
             }
+        }
+
+        if(inTagRem) {
+            throw new ProcessorException("Non closed xml tag on " + bufferIndex + "... of [" + new String(Arrays.copyOfRange(input, from, to)) + "]");
         }
 
         return Arrays.copyOf(buffer, bufferIndex);

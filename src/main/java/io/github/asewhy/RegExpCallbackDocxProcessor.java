@@ -1,14 +1,14 @@
 package io.github.asewhy;
 
 import io.github.asewhy.base.ZipFileProcessor;
+import io.github.asewhy.support.exceptions.ProcessorException;
 import io.github.asewhy.support.processors.RegexpCallbackMacrosProcessor;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -59,9 +59,9 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param path путь до файла
      * @return поток с обработанными данными
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public ByteArrayOutputStream process(@NotNull Path path) throws Exception {
+    public ByteArrayOutputStream process(@NotNull Path path) throws ProcessorException, IOException {
         return super.process(path, processor);
     }
 
@@ -70,9 +70,9 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param source файл для обработки
      * @return поток с обработанными данными
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public ByteArrayOutputStream process(File source) throws Exception {
+    public ByteArrayOutputStream process(File source) throws ProcessorException, IOException {
         return super.process(source, processor);
     }
 
@@ -81,10 +81,21 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param path путь до файла
      * @return поток с обработанными данными
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public ByteArrayOutputStream process(String path) throws Exception {
+    public ByteArrayOutputStream process(String path) throws ProcessorException, IOException {
         return super.process(path, processor);
+    }
+
+    /**
+     * Начинает обработку файла по заданному пути
+     *
+     * @param source входящий поток для обработки
+     * @return поток с обработанными данными
+     * @throws ProcessorException если в процессе обработки произошли ошибки
+     */
+    public ByteArrayOutputStream process(InputStream source) throws ProcessorException, IOException {
+        return super.process(source, processor);
     }
 
     /**
@@ -92,9 +103,9 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param path путь до файла
      * @param output поток для вывода
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public void process(@NotNull Path path, OutputStream output) throws Exception {
+    public void process(@NotNull Path path, OutputStream output) throws ProcessorException, IOException {
         super.process(path, processor, output);
     }
 
@@ -103,9 +114,9 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param source файл для обработки
      * @param output поток для вывода
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public void process(File source, OutputStream output) throws Exception {
+    public void process(File source, OutputStream output) throws ProcessorException, IOException {
         super.process(source, processor, output);
     }
 
@@ -114,9 +125,64 @@ public final class RegExpCallbackDocxProcessor extends ZipFileProcessor {
      *
      * @param path путь до файла
      * @param output поток для вывода
-     * @throws Exception если в процессе обработки произошли ошибки
+     * @throws ProcessorException если в процессе обработки произошли ошибки
      */
-    public void process(String path, OutputStream output) throws Exception {
+    public void process(String path, OutputStream output) throws ProcessorException, IOException {
         super.process(path, processor, output);
+    }
+
+    /**
+     * Начинает обработку файла по заданному пути
+     *
+     * @param source входящий поток для обработки
+     * @param output поток для вывода
+     * @throws ProcessorException если в процессе обработки произошли ошибки
+     */
+    public void process(InputStream source, OutputStream output) throws ProcessorException, IOException {
+        super.process(source, processor, output);
+    }
+
+    /**
+     * Начинает проверку файла по заданному пути
+     *
+     * @param path путь до файла
+     * @throws ProcessorException если в процессе проверки произошли ошибки (проверка не прошла успешно)
+     * @return список тегов, используемых в проверяемом шаблоне, если все ок
+     */
+    public List<String> validate(@NotNull Path path) throws ProcessorException, IOException {
+        return super.validate(path, processor);
+    }
+
+    /**
+     * Начинает проверку файла по заданному пути
+     *
+     * @param source файл для проверки
+     * @throws ProcessorException если в процессе проверки произошли ошибки (проверка не прошла успешно)
+     * @return список тегов, используемых в проверяемом шаблоне, если все ок
+     */
+    public List<String> validate(File source) throws ProcessorException, IOException {
+        return super.validate(source, processor);
+    }
+
+    /**
+     * Начинает проверку файла по заданному пути
+     *
+     * @param path путь до файла
+     * @throws ProcessorException если в процессе проверки произошли ошибки (проверка не прошла успешно)
+     * @return список тегов, используемых в проверяемом шаблоне, если все ок
+     */
+    public List<String> validate(String path) throws ProcessorException, IOException {
+        return super.validate(path, processor);
+    }
+
+    /**
+     * Начинает проверку файла по заданному пути
+     *
+     * @param source входящий поток для проверки
+     * @throws ProcessorException если в процессе проверки произошли ошибки (проверка не прошла успешно)
+     * @return список тегов, используемых в проверяемом шаблоне, если все ок
+     */
+    public List<String> validate(InputStream source) throws ProcessorException, IOException {
+        return super.validate(source, processor);
     }
 }

@@ -1,10 +1,12 @@
 package io.github.asewhy.support.interfaces;
 
+import io.github.asewhy.support.exceptions.ProcessorException;
+
 import java.io.OutputStream;
 
 public interface iDocxProcessor extends iMacrosProcessor {
     @Override
-    void doProcess(OutputStream output, byte[] input) throws Exception;
+    void doProcess(OutputStream output, byte[] input) throws ProcessorException;
 
     @Override
     default boolean canProcess(String filename, byte[] input) {

@@ -1,7 +1,12 @@
 package io.github.asewhy.support.base;
 
+import io.github.asewhy.support.exceptions.ProcessorException;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public abstract class BaseSequenceMacrosProcessor extends BaseXmlMacrosProcessor {
@@ -54,41 +59,71 @@ public abstract class BaseSequenceMacrosProcessor extends BaseXmlMacrosProcessor
 
     protected abstract byte[] getMacros(String key) throws IllegalAccessException, InvocationTargetException;
 
-    protected String supply(byte[] bytes, int start, int end) {
+    protected String supply(byte[] bytes, int start, int end) throws ProcessorException {
         return new String(stripTags(bytes, start, end));
     }
 
     @Override
-    public void doProcessLoggable(OutputStream output, byte[] bytes) throws Exception {
-        int length = bytes.length,
-            marker = 0,
-            currentStartIdx,
-            currentEndIdx,
-            lastFoundEndIdx = 0;
+    public void doProcessLoggable(OutputStream output, byte[] bytes) throws ProcessorException {
+        int length = bytes.length, marker = 0,
+            currentStartIdx, currentEndIdx, lastFoundEndIdx = 0;
+
+        try {
+            while(marker != -1 && marker < length) {
+                currentStartIdx = indexOf(bytes, openGroupMarker, marker);
+
+                if (currentStartIdx != -1) {
+                    output.write(bytes, marker, currentStartIdx - marker);
+
+                    marker = currentStartIdx + openGroupMarkerLength;
+                    currentEndIdx = indexOf(bytes, closeGroupMarker, marker);
+
+                    if (currentEndIdx != -1) {
+                        output.write(getMacros(supply(bytes, marker, currentEndIdx)));
+
+                        lastFoundEndIdx = marker = currentEndIdx + openGroupMarkerLength;
+                    } else{
+                        throw new ProcessorException("Cannot find close marker for index " + marker + " expected [" + new String(closeGroupMarker) + "] for " + new String(stripTags(bytes, currentStartIdx, length)));
+                    }
+                } else {
+                    marker = -1;
+                }
+            }
+
+            if(lastFoundEndIdx != 0 ) {
+                output.write(bytes, lastFoundEndIdx, length - lastFoundEndIdx);
+            }
+        } catch (IOException | IllegalAccessException | InvocationTargetException e) {
+            throw new ProcessorException(e);
+        }
+    }
+
+    @Override
+    public List<String> doValidate(byte[] bytes) throws ProcessorException {
+        var tags = new ArrayList<String>();
+
+        int length = bytes.length, marker = 0,
+            currentStartIdx, currentEndIdx, lastFoundEndIdx = 0;
 
         while(marker != -1 && marker < length) {
             currentStartIdx = indexOf(bytes, openGroupMarker, marker);
 
-            if(currentStartIdx != -1) {
-                output.write(bytes, marker, currentStartIdx - marker);
-
+            if (currentStartIdx != -1) {
                 marker = currentStartIdx + openGroupMarkerLength;
                 currentEndIdx = indexOf(bytes, closeGroupMarker, marker);
 
-                if(currentEndIdx != -1) {
-                    output.write(getMacros(supply(bytes, marker, currentEndIdx)));
+                if (currentEndIdx != -1) {
+                    tags.add(supply(bytes, marker, currentEndIdx));
 
-                    lastFoundEndIdx = marker = currentEndIdx + openGroupMarkerLength;
-                } else {
-                    throw new IllegalAccessException("Cannot find close marker for index " + marker + " expected [" + new String(closeGroupMarker) + "]");
+                    marker = currentEndIdx + openGroupMarkerLength;
+                } else{
+                    throw new ProcessorException("Cannot find close marker for index " + marker + " expected [" + new String(closeGroupMarker) + "] for " + new String(stripTags(bytes, currentStartIdx, length)));
                 }
             } else {
                 marker = -1;
             }
         }
 
-        if(lastFoundEndIdx != 0 ) {
-            output.write(bytes, lastFoundEndIdx, length - lastFoundEndIdx);
-        }
+        return tags;
     }
 }

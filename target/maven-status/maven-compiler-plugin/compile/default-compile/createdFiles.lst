@@ -14,3 +14,4 @@ io/github/asewhy/support/processors/SequenceResolverMacrosProcessor.class
 io/github/asewhy/RegExpCallbackDocxProcessor.class
 io/github/asewhy/support/base/BaseXmlMacrosProcessor.class
 io/github/asewhy/support/processors/RegexpResolverMacrosProcessor.class
+io/github/asewhy/support/exceptions/ProcessorException.class

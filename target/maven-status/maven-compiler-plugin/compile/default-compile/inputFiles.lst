@@ -1,6 +1,7 @@
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/RegExpResolverDocxProcessor.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/ArgumentResolverDataBinder.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/interfaces/iDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/exceptions/ProcessorException.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/RegExpCallbackDocxProcessor.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/base/ZipFileProcessor.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/interfaces/iMacrosProcessor.java
