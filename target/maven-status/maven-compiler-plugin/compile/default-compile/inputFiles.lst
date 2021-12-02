@@ -1,0 +1,16 @@
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/RegExpResolverDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/ArgumentResolverDataBinder.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/interfaces/iDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/RegExpCallbackDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/base/ZipFileProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/interfaces/iMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/base/BaseXmlMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/processors/RegexpResolverMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/ProcessorArgumentResolver.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/processors/SequenceResolverMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/base/BaseDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/base/BaseSequenceMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/SequenceResolverDocxProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/processors/RegexpCallbackMacrosProcessor.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/ProcessorTypeProvider.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/base/BaseRegexpMacrosProcessor.java
