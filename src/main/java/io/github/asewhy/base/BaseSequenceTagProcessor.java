@@ -15,24 +15,24 @@ import java.util.HashSet;
 import java.util.List;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
+public abstract class BaseSequenceTagProcessor extends BaseDocxProcessor {
     /**
-     * Получить значение по макросу key
+     * Получить значение по тегу key
      *
-     * @param key макрос
-     * @return значение макроса
+     * @param key тег
+     * @return значение тега
      */
-    protected abstract String getMacros(String key);
+    protected abstract String getTag(String key);
 
     /**
-     * Получить значение по макросу key и ключу index
+     * Получить значение по тегу key и ключу index
      *
-     * @param key макрос
+     * @param key тег
      * @param index индекс
      * @param subKey подключ значения полученного по индексу
-     * @return значение макроса
+     * @return значение тега
      */
-    protected abstract String getMacros(String key, Integer index, String subKey);
+    protected abstract String getTag(String key, Integer index, String subKey);
 
     /**
      * Получить набор тегов, которые присутствуют в маппере тегов
@@ -50,6 +50,40 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
     protected abstract Integer getTableRowCount(String key);
 
     /**
+     * Проверить, является ли бинд тега итерируемым
+     *
+     * @param key тег по которому нужно проверить
+     * @return true если является
+     */
+    protected abstract Boolean isIterableTag(String key);
+
+    /**
+     * Проверить, является ли это строка итерируемой
+     *
+     * @param nodes список текстовых узлов строки
+     * @param supportTagNames поддерживаемые названия тегов
+     * @return не null, если является
+     */
+    private IterableBagData isIterableRowCheck(List<Text> nodes, List<String> supportTagNames) {
+        for (var node : nodes) {
+            var textContent = node.getValue();
+
+            for (var tag : supportTagNames) {
+                //
+                // Если текущий текстовый узел содержит тег
+                //
+                if (textContent.contains(tag)) {
+                    if(isIterableTag(tag)) {
+                        return new IterableBagData(0, tag);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Проверить, является ли это строка итерируемой
      *
      * @param nodes список текстовых узлов строки
@@ -62,7 +96,7 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
 
             for (var tag : supportTagNames) {
                 //
-                // Если текущий текстовый узел содержит макрос
+                // Если текущий текстовый узел содержит тег
                 //
                 if (textContent.contains(tag)) {
                     var count = getTableRowCount(tag);
@@ -91,7 +125,7 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
             try {
                 for(var tag: supportTagNames) {
                     if(textContent.contains(tag)) {
-                        textContent = textContent.replaceAll(tag, getMacros(tag));
+                        textContent = textContent.replaceAll(tag, getTag(tag));
                     }
                 }
             } catch (RuntimeException e) {
@@ -116,7 +150,7 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
             try {
                 for(var tag: supportTagNames) {
                     if(textContent.contains(tag)) {
-                        textContent = textContent.replaceAll(tag, getMacros(primaryTag, dataIndex, tag));
+                        textContent = textContent.replaceAll(tag, getTag(primaryTag, dataIndex, tag));
                     }
                 }
             } catch (RuntimeException e) {
@@ -145,14 +179,14 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
 
                 if(rowIterablesData != null) {
                     var index = nodes.indexOf(row);
-                    var currentSubspaces = getSupportTagNames(rowIterablesData.getIterablesPrimaryTag());
+                    var currentSubspace = getSupportTagNames(rowIterablesData.getIterablesPrimaryTag());
 
                     nodes.remove(index);
 
                     for(var i = 0; i < rowIterablesData.getIterablesCount(); i++) {
                         var newRow = XmlUtils.deepCopy(row);
                         var newRowTextNodes = getAllElementFromObject(newRow, Text.class);
-                        replaceTags(newRowTextNodes, currentSubspaces, i, rowIterablesData.getIterablesPrimaryTag());
+                        replaceTags(newRowTextNodes, currentSubspace, i, rowIterablesData.getIterablesPrimaryTag());
                         nodes.add(index++, newRow);
                     }
                 } else {
@@ -175,6 +209,40 @@ public abstract class BaseSequenceMacrosProcessor extends BaseDocxProcessor {
             for(var tag: supportTagNames) {
                 if(textContent.contains(tag)) {
                     foundTags.add(tag);
+                }
+            }
+        }
+
+        for(var table: tableNodes) {
+            var nodes = table.getContent();
+            var rowNodes = getAllElementFromObject(table, Tr.class);
+
+            for(var row: rowNodes) {
+                var rowTextNodes = getAllElementFromObject(row, Text.class);
+                var rowIterablesData = isIterableRowCheck(rowTextNodes, supportTagNames);
+
+                if(rowIterablesData != null) {
+                    var currentSubspace = getSupportTagNames(rowIterablesData.getIterablesPrimaryTag());
+
+                    for(var node: rowTextNodes) {
+                        var textContent = node.getValue();
+
+                        for(var tag: currentSubspace) {
+                            if(textContent.contains(tag)) {
+                                foundTags.add(tag);
+                            }
+                        }
+                    }
+                } else {
+                    for(var node: rowTextNodes) {
+                        var textContent = node.getValue();
+
+                        for(var tag: supportTagNames) {
+                            if(textContent.contains(tag)) {
+                                foundTags.add(tag);
+                            }
+                        }
+                    }
                 }
             }
         }

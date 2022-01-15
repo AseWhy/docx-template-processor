@@ -3,52 +3,52 @@ package io.github.asewhy.processors;
 import io.github.asewhy.ProcessorArgumentResolver;
 import io.github.asewhy.ProcessorDataProvider;
 import io.github.asewhy.ProcessorTypeProvider;
-import io.github.asewhy.base.BaseSequenceMacrosProcessor;
+import io.github.asewhy.base.BaseSequenceTagProcessor;
 import io.github.asewhy.interfaces.iDataResolver;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @SuppressWarnings({"UnusedReturnValue", "unused", "FieldCanBeLocal"})
-public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosProcessor {
+public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor {
     private final ProcessorArgumentResolver resolver;
     private final ProcessorTypeProvider typeProvider;
     private final ProcessorDataProvider dataProvider;
 
     /**
-     * Regexp обработчик, получает значение макросов из {@link ProcessorArgumentResolver}
+     * Regexp обработчик, получает значение тегов из {@link ProcessorArgumentResolver}
      *
      * @param dataProvider поставщик данных для {@link ProcessorArgumentResolver}
      * @param typeProvider поставщик типов для {@link ProcessorArgumentResolver}
      */
-    public SequenceResolverMacrosProcessor(ProcessorDataProvider dataProvider, ProcessorTypeProvider typeProvider) {
+    public SequenceResolveTagProcessor(ProcessorDataProvider dataProvider, ProcessorTypeProvider typeProvider) {
         this(new ProcessorArgumentResolver(typeProvider, dataProvider));
     }
 
     /**
-     * Regexp обработчик, получает значение макросов из {@link ProcessorArgumentResolver}
+     * Regexp обработчик, получает значение тегов из {@link ProcessorArgumentResolver}
      *
      * @param dataProvider поставщик данных для {@link ProcessorArgumentResolver}
      */
-    public SequenceResolverMacrosProcessor(ProcessorDataProvider dataProvider) {
+    public SequenceResolveTagProcessor(ProcessorDataProvider dataProvider) {
         this(new ProcessorArgumentResolver(dataProvider));
     }
 
     /**
-     * Regexp обработчик, получает значение макросов из {@link ProcessorArgumentResolver}
+     * Regexp обработчик, получает значение тегов из {@link ProcessorArgumentResolver}
      *
      * @param typeProvider поставщик типов для {@link ProcessorArgumentResolver}
      */
-    public SequenceResolverMacrosProcessor(ProcessorTypeProvider typeProvider) {
+    public SequenceResolveTagProcessor(ProcessorTypeProvider typeProvider) {
         this(new ProcessorArgumentResolver(typeProvider));
     }
 
     /**
-     * Regexp обработчик, получает значение макросов из {@link ProcessorArgumentResolver}
+     * Regexp обработчик, получает значение тегов из {@link ProcessorArgumentResolver}
      *
-     * @param resolver источник значений макросов
+     * @param resolver источник значений тегов
      */
-    public SequenceResolverMacrosProcessor(ProcessorArgumentResolver resolver) {
+    public SequenceResolveTagProcessor(ProcessorArgumentResolver resolver) {
         this.resolver = resolver;
         this.typeProvider = resolver.getTypeProvider();
         this.dataProvider = resolver.getDataProvider();
@@ -62,7 +62,7 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> SequenceResolverMacrosProcessor resolve(Class<T> clazz, iDataResolver<T> resolver) {
+    public <T> SequenceResolveTagProcessor resolve(Class<T> clazz, iDataResolver<T> resolver) {
         this.resolver.resolve(clazz, resolver); return this;
     }
 
@@ -72,7 +72,7 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
      * @param object объект для добавления
      * @return себя
      */
-    public SequenceResolverMacrosProcessor resolve(Object object) {
+    public SequenceResolveTagProcessor resolve(Object object) {
         this.resolver.resolve(object); return this;
     }
 
@@ -82,7 +82,7 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
      * @param resolver другой набор данных
      * @return себя
      */
-    public SequenceResolverMacrosProcessor resolve(ProcessorArgumentResolver resolver) {
+    public SequenceResolveTagProcessor resolve(ProcessorArgumentResolver resolver) {
         this.resolver.resolve(resolver); return this;
     }
 
@@ -121,17 +121,17 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
     }
 
     /**
-     * Получить значение макроса по ключу
+     * Получить значение тега по ключу
      *
      * Примерно так это выглядит: key[index].subKey
      *
-     * @param key ключ для получения корневого макроса
-     * @param index индекс получения подмакроса
-     * @param subKey поле получения подмакроса
-     * @return значение макроса по ключу
+     * @param key ключ для получения корневого тега
+     * @param index индекс получения подтега
+     * @param subKey поле получения подтега
+     * @return значение тега по ключу
      */
     @Override
-    protected String getMacros(String key, Integer index, String subKey) {
+    protected String getTag(String key, Integer index, String subKey) {
         try {
             return toString(this.resolver.getIndexedValueOf(key, index, subKey));
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -140,18 +140,29 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
     }
 
     /**
-     * Получить значение макроса по ключу
+     * Получить значение тега по ключу
      *
-     * @param key ключ для получения макроса
-     * @return значение макроса по ключу
+     * @param key ключ для получения тега
+     * @return значение тега по ключу
      */
     @Override
-    protected String getMacros(String key)  {
+    protected String getTag(String key)  {
         try {
             return toString(resolver.resolve(key));
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Проверить, является ли бинд тега итерируемым
+     *
+     * @param key тег по которому нужно проверить
+     * @return true если является
+     */
+    @Override
+    protected Boolean isIterableTag(String key) {
+        return typeProvider.isCollection(key);
     }
 
     /**
@@ -163,7 +174,7 @@ public final class SequenceResolverMacrosProcessor extends BaseSequenceMacrosPro
     @Override
     protected Integer getTableRowCount(String key) {
         try {
-            if(!typeProvider.isCollection(key)) {
+            if(!isIterableTag(key)) {
                 return -1;
             }
 

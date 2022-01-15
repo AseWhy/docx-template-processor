@@ -23,7 +23,7 @@ public class ProcessorArgumentResolver {
      *
      * @param dataProvider поставщик данныз, набор с классами, и функциями, по которым можно получить значение этого класса
      *                     позволяет динамически запрашивать данные
-     * @param typeProvider поставщик типов, набор с полями для автоматического понимания на какой макрос
+     * @param typeProvider поставщик типов, набор с полями для автоматического понимания на какой тег
      *                 какое поле нужно получить
      */
     public ProcessorArgumentResolver(ProcessorTypeProvider typeProvider, ProcessorDataProvider dataProvider) {
@@ -35,7 +35,7 @@ public class ProcessorArgumentResolver {
     /**
      * Автоматически разрешает пути до полей, на которых был повешен бинд в {@link ProcessorTypeProvider}
      *
-     * @param typeProvider поставщик типов, набор с полями для автоматического понимания на какой макрос
+     * @param typeProvider поставщик типов, набор с полями для автоматического понимания на какой тег
      *                 какое поле нужно получить
      */
     public ProcessorArgumentResolver(ProcessorTypeProvider typeProvider) {

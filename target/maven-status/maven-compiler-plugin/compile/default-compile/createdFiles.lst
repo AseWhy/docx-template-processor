@@ -1,14 +1,14 @@
 io/github/asewhy/interfaces/iProvider.class
 io/github/asewhy/base/BaseDocxProcessor.class
 io/github/asewhy/interfaces/iDataResolver.class
-io/github/asewhy/processors/SequenceResolverMacrosProcessor.class
 io/github/asewhy/ProcessorDataProvider.class
 io/github/asewhy/ArgumentResolverDataBinder.class
 io/github/asewhy/ProcessorTypeProvider.class
 io/github/asewhy/support/TreeResult.class
 io/github/asewhy/interfaces/iDocxProcessor.class
 io/github/asewhy/ProcessorArgumentResolver.class
+io/github/asewhy/base/BaseSequenceTagProcessor.class
+io/github/asewhy/processors/SequenceResolveTagProcessor.class
 io/github/asewhy/DocxProcessorsUtils.class
 io/github/asewhy/exceptions/ProcessorException.class
-io/github/asewhy/base/BaseSequenceMacrosProcessor.class
 io/github/asewhy/support/IterableBagData.class

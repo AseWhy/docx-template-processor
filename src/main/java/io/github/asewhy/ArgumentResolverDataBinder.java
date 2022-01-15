@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class ArgumentResolverDataBinder<T, P extends iProvider> implements iProvider {
-    private static final Pattern macrosNamePattern = Pattern.compile("[aA-zZаА-яЯ]+");
+    private static final Pattern tagNamePattern = Pattern.compile("[aA-zZаА-яЯ]+");
 
     private final P parent;
     private final Class<T> clazz;
@@ -22,6 +22,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
     private final Map<String, Class<?>> resultClasses = new HashMap<>();
     private final Map<String, AccessibleObject> binds = new HashMap<>();
     private final Map<String, List<String>> subspaces = new HashMap<>();
+    private final Map<String, Map<String, String>> descriptions = new HashMap<>();
     private final String namespace;
     private final String subspace;
 
@@ -30,6 +31,8 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
         this.namespace = namespace;
         this.subspace = namespace != null ? namespace : ProcessorTypeProvider.MAIN_SUBSPACE;
         this.parent = parent;
+
+        this.descriptions.put(subspace, new HashMap<>());
         this.subspaces.put(subspace, new ArrayList<>());
     }
 
@@ -49,83 +52,128 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
     /**
      * Добавить поле в набор предобработанных данных
      *
-     * @param macros макрос для добавления
+     * @param tag тег для добавления
      * @param bind добавляемый биндинг
      */
-    private void addBind(String macros, TreeResult bind) {
-        var key = namespace != null ? namespace + "#" + macros : macros;
+    private void addBind(String tag, String description, TreeResult bind) {
+        var key = namespace != null ? namespace + "#" + tag : tag;
 
         this.resultClasses.put(key, bind.getClazz());
         this.binds.put(key, bind.getAccessible());
         this.classes.put(key, this.clazz);
-        this.subspaces.get(this.subspace).add(macros);
+        this.subspaces.get(this.subspace).add(tag);
+        this.descriptions.get(this.subspace).put(tag, description);
     }
 
     /**
      * Биндит доступ к коллекции элементов поля
      *
-     * @param macros название поля источника данных (тип должен быть коллекцией)
+     * @param tag название поля источника данных (тип должен быть коллекцией)
      * @throws NoSuchFieldException если поле или метод небыли найдены, или поле не является коллекцией
      */
     @Contract("_ -> new")
-    public @NotNull ArgumentResolverDataBinder<?, ArgumentResolverDataBinder<T, P>> sub(String macros) throws NoSuchFieldException {
-        var bind = findTree(this.clazz, macros);
+    public @NotNull ArgumentResolverDataBinder<?, ArgumentResolverDataBinder<T, P>> sub(String tag) throws NoSuchFieldException {
+        var bind = findTree(this.clazz, tag);
 
         if(bind == null || !Collection.class.isAssignableFrom(bind.getClazz())) {
-            throw new NoSuchFieldException("Cannot find collection field " + macros + " in class " + this.clazz.getName() + ".");
+            throw new NoSuchFieldException("Cannot find collection field " + tag + " in class " + this.clazz.getName() + ".");
         }
 
-        return new ArgumentResolverDataBinder<>(requireGeneric(bind.getAccessible(), macros), this, macros);
+        return new ArgumentResolverDataBinder<>(requireGeneric(bind.getAccessible(), tag), this, tag);
     }
 
     /**
-     * Биндит макрос на значение поля класс. То-есть при запросе поля `macros` проводником будет возвращено значение поля
+     * Добавить описание для тега (описания будут использоваться при обработке ошибок)
+     *
+     * @param tag тег
+     * @param description описание
+     * @return текущая фабрика
+     */
+    public ArgumentResolverDataBinder<T, P> desc(String tag, String description) {
+        this.descriptions.get(this.subspace).put(tag, description); return this;
+    }
+
+    /**
+     * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
      * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
      *
-     * @param macros макрос для биндинга
+     * @param tag тег для биндинга
      * @param fieldOrMethodName на какое поле ссылается
-     * @return себя любимого
+     * @return текущая фабрика
      * @throws NoSuchFieldException если поля в текущем обрабатываемом классе нет
      */
-    public ArgumentResolverDataBinder<T, P> bind(String macros, String fieldOrMethodName) throws NoSuchFieldException {
-        if(!macrosNamePattern.matcher(macros).matches()) {
-            throw new RuntimeException("Bad macros name '" + macros + "'. Allowed only aA-zZаА-яЯ pattern match macros names.");
+    public ArgumentResolverDataBinder<T, P> bind(@NotNull String tag, @NotNull String fieldOrMethodName) throws NoSuchFieldException {
+        return bind(tag, fieldOrMethodName, null);
+    }
+
+    /**
+     * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
+     * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
+     *
+     * @param tag тег для биндинга
+     * @param fieldOrMethodName на какое поле ссылается
+     * @param description описание поля (опционально)
+     * @return текущая фабрика
+     * @throws NoSuchFieldException если поля в текущем обрабатываемом классе нет
+     */
+    public ArgumentResolverDataBinder<T, P> bind(@NotNull String tag, @NotNull String fieldOrMethodName, String description) throws NoSuchFieldException {
+        if(!tagNamePattern.matcher(tag).matches()) {
+            throw new RuntimeException("Bad tag name '" + tag + "'. Allowed only aA-zZаА-яЯ pattern match tag names.");
         }
 
         var bind = findTree(this.clazz, fieldOrMethodName);
 
         if(bind != null) {
-            addBind(macros, bind);
+            addBind(tag, description, bind);
         } else {
-            throw new NoSuchFieldException("Cannot find macros " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
+            throw new NoSuchFieldException("Cannot find tag " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
         }
 
         return this;
     }
 
     /**
-     * Биндит макрос на значение поля класс. То-есть при запросе поля `macros` проводником будет возвращено значение поля
+     * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
      * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
      *
      * Если производится биндинг, на класс, поставляемый коллекцией, то необходимо указать префикс поля, которое
      * поставляет коллекцию объектов этого класса. Допустим поле root класса N имеет тип X, в самом классе X есть поле root
      * поэтому, чтобы получить доступ именно к полю X.root нужно писать root.root
      *
-     * @param macros макрос для биндинга
+     * @param tag тег для биндинга
      * @param fieldOrMethodName на какое поле ссылается
-     * @return себя любимого
+     * @return новая фабрика
      * @throws NoSuchFieldException если поля в текущем обрабатываемом классе нет
      */
     @Contract("_, _ -> new")
-    public @NotNull ArgumentResolverDataBinder<?, ArgumentResolverDataBinder<T, P>> bindSub(String macros, String fieldOrMethodName) throws NoSuchFieldException {
-        if(!macrosNamePattern.matcher(macros).matches()) {
-            throw new RuntimeException("Bad macros name '" + macros + "'. Allowed only aA-zZаА-яЯ pattern match macros names.");
+    public @NotNull ArgumentResolverDataBinder<?, ArgumentResolverDataBinder<T, P>> sub(@NotNull String tag, @NotNull String fieldOrMethodName) throws NoSuchFieldException {
+        return sub(tag, fieldOrMethodName, null);
+    }
+
+    /**
+     * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
+     * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
+     *
+     * Если производится биндинг, на класс, поставляемый коллекцией, то необходимо указать префикс поля, которое
+     * поставляет коллекцию объектов этого класса. Допустим поле root класса N имеет тип X, в самом классе X есть поле root
+     * поэтому, чтобы получить доступ именно к полю X.root нужно писать root.root
+     *
+     * @param tag тег для биндинга
+     * @param fieldOrMethodName на какое поле ссылается
+     * @param description описание поля (опционально)
+     * @return новая фабрика
+     * @throws NoSuchFieldException если поля в текущем обрабатываемом классе нет
+     */
+    @Contract("_, _, _ -> new")
+    public @NotNull ArgumentResolverDataBinder<?, ArgumentResolverDataBinder<T, P>> sub(@NotNull String tag, @NotNull String fieldOrMethodName, String description) throws NoSuchFieldException {
+        if(!tagNamePattern.matcher(tag).matches()) {
+            throw new RuntimeException("Bad tag name '" + tag + "'. Allowed only aA-zZаА-яЯ pattern match tag names.");
         }
 
         var bind = findTree(this.clazz, fieldOrMethodName);
 
         if(bind != null) {
-            addBind(macros, bind);
+            addBind(tag, description, bind);
         } else {
             throw new NoSuchFieldException("Cannot find field " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
         }
@@ -134,21 +182,21 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
             throw new NoSuchFieldException("Cannot find collection field " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
         }
 
-        return new ArgumentResolverDataBinder<>(requireGeneric(bind.getAccessible(), macros), this, macros);
+        return new ArgumentResolverDataBinder<>(requireGeneric(bind.getAccessible(), tag), this, tag);
     }
 
     /**
      * Гарантирует наличие generic типа у коллекции
      *
      * @param collection поле или метод, с типом коллекции
-     * @param macros поле с названием макроса
+     * @param tag поле с названием тега
      * @return generic тип коллекции
      */
-    private Class<?> requireGeneric(AccessibleObject collection, String macros) {
+    private Class<?> requireGeneric(AccessibleObject collection, String tag) {
         if(collection instanceof Field field) {
-            return Objects.requireNonNull(DocxProcessorsUtils.findXGeneric(field), "Cannot find generic of " + macros);
+            return Objects.requireNonNull(DocxProcessorsUtils.findXGeneric(field), "Cannot find generic of " + tag);
         } else if(collection instanceof Method method) {
-            return Objects.requireNonNull(DocxProcessorsUtils.findXGeneric(method), "Cannot find generic of " + macros);
+            return Objects.requireNonNull(DocxProcessorsUtils.findXGeneric(method), "Cannot find generic of " + tag);
         } else {
             throw new RuntimeException("Unknown collection type.");
         }
@@ -160,7 +208,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
      * @return родительский билдер
      */
     public P build() {
-        this.parent.provide(this.classes, this.resultClasses, this.subspaces, this.binds); return parent;
+        this.parent.provide(this.classes, this.resultClasses, this.subspaces, this.binds, this.descriptions); return parent;
     }
 
     /**
@@ -234,22 +282,24 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
 
     /**
      * Перенести данные из внешнего источника
-     *
-     * @param classes список соответствий макросов и классов
+     * @param classes список соответствий тегов и классов
      * @param resultClasses список соответствий полей (или методов) и их типов (или типов их возвращаемых значений)
      * @param subspaces список соответсвия подпространств и набора тегов (для разных подпространств разный набор тегов)
      * @param binds список соответствий полей и биндингов
+     * @param descriptions список описаний для каждого отдельного бинда
      */
     @Override
     public void provide(
-        Map<String, Class<?>> classes,
-        Map<String, Class<?>> resultClasses,
+        @NotNull Map<String, Class<?>> classes,
+        @NotNull Map<String, Class<?>> resultClasses,
         @NotNull Map<String, List<String>> subspaces,
-        @NotNull Map<String, AccessibleObject> binds
+        @NotNull Map<String, AccessibleObject> binds,
+        @NotNull Map<String, Map<String, String>> descriptions
     ) {
         this.binds.putAll(binds);
         this.classes.putAll(classes);
         this.resultClasses.putAll(resultClasses);
+
 
         for(var subspace: subspaces.entrySet()) {
             var key = subspace.getKey();

@@ -8,9 +8,10 @@ import java.util.Map;
 
 public interface iProvider {
     void provide(
-        Map<String, Class<?>> classes,
-        Map<String, Class<?>> resultClasses,
-        Map<String, List<String>> subspaces,
-        @NotNull Map<String, AccessibleObject> binds
+        @NotNull Map<String, Class<?>> classes,
+        @NotNull  Map<String, Class<?>> resultClasses,
+        @NotNull  Map<String, List<String>> subspaces,
+        @NotNull Map<String, AccessibleObject> binds,
+        @NotNull Map<String, Map<String, String>> descriptions
     );
 }
