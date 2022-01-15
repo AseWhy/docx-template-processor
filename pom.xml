@@ -15,9 +15,9 @@
         <io.github.asewhy.json>1.0</io.github.asewhy.json>
         <org.projectlombok.lombok>1.18.22</org.projectlombok.lombok>
         <log4j.log4j.version>1.2.17</log4j.log4j.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <org.apache.logging.log4j.log4j-core.version>2.14.1</org.apache.logging.log4j.log4j-core.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <org.apache.logging.log4j.log4j-core.version>2.17.0</org.apache.logging.log4j.log4j-core.version>
     </properties>
 
     <dependencies>
@@ -27,21 +27,36 @@
             <version>${org.jetbrains.annotations.version}</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>io.github.asewhy</groupId>
             <artifactId>json</artifactId>
             <version>${io.github.asewhy.json}</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${org.projectlombok.lombok}</version>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${org.apache.logging.log4j.log4j-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j</artifactId>
+            <version>6.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
         </dependency>
     </dependencies>
 

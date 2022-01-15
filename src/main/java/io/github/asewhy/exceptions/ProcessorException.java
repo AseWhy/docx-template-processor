@@ -1,4 +1,4 @@
-package io.github.asewhy.support.exceptions;
+package io.github.asewhy.exceptions;
 
 public class ProcessorException extends Exception {
     public ProcessorException(Throwable cause) {
