@@ -1,5 +1,6 @@
 package io.github.asewhy.base;
 
+import io.github.asewhy.ProcessorArgumentResolver;
 import io.github.asewhy.ProcessorTypeProvider;
 import io.github.asewhy.exceptions.ProcessorException;
 import io.github.asewhy.support.IterableBagData;
@@ -229,7 +230,7 @@ public abstract class BaseSequenceTagProcessor extends BaseDocxProcessor {
 
                         for(var tag: currentSubspace) {
                             if(textContent.contains(tag)) {
-                                foundTags.add(tag);
+                                foundTags.add(ProcessorArgumentResolver.getSubPropertyIndex(tag, rowIterablesData.getIterablesPrimaryTag()));
                             }
                         }
                     }
