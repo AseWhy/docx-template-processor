@@ -130,7 +130,7 @@ public abstract class BaseSequenceTagProcessor extends BaseDocxProcessor {
                     }
                 }
             } catch (RuntimeException e) {
-                throw new ProcessorException(e.getCause());
+                throw new ProcessorException(e);
             }
 
             node.setValue(textContent);
@@ -155,7 +155,7 @@ public abstract class BaseSequenceTagProcessor extends BaseDocxProcessor {
                     }
                 }
             } catch (RuntimeException e) {
-                throw new ProcessorException(e.getCause());
+                throw new ProcessorException(e);
             }
 
             node.setValue(textContent);

@@ -12,6 +12,7 @@
 
     <properties>
         <org.jetbrains.annotations.version>22.0.0</org.jetbrains.annotations.version>
+        <io.github.asewhy.reflection-utils>1.0</io.github.asewhy.reflection-utils>
         <io.github.asewhy.json>1.0</io.github.asewhy.json>
         <org.projectlombok.lombok>1.18.22</org.projectlombok.lombok>
         <log4j.log4j.version>1.2.17</log4j.log4j.version>
@@ -21,6 +22,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.asewhy</groupId>
+            <artifactId>reflection-utils</artifactId>
+            <version>${io.github.asewhy.reflection-utils}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
