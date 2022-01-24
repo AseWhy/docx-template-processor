@@ -4,6 +4,7 @@ import io.github.asewhy.interfaces.iDataResolver;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -71,7 +72,7 @@ public class ProcessorArgumentResolver {
      * @return себя
      */
     public ProcessorArgumentResolver resolve(Object object) {
-        dataProvider.provide(object.getClass(), object); return this;
+        dataProvider.provide(ReflectionUtils.skipAnonClasses(object.getClass()), object); return this;
     }
 
     /**
@@ -80,7 +81,7 @@ public class ProcessorArgumentResolver {
      * @param resolver другой набор данных
      * @return себя
      */
-    public ProcessorArgumentResolver resolve(ProcessorArgumentResolver resolver) {
+    public ProcessorArgumentResolver resolve(@NotNull ProcessorArgumentResolver resolver) {
         dataProvider.provide(resolver.dataProvider); return this;
     }
 
@@ -91,7 +92,7 @@ public class ProcessorArgumentResolver {
      * @param cast поле, которое нужно получить от объекта data
      * @return значение поля
      */
-    private Object getPropertyOfObject(Object data, Field cast) {
+    private @Nullable Object getPropertyOfObject(Object data, @NotNull Field cast) {
         try {
             var access = cast.canAccess(data);
 
@@ -116,7 +117,7 @@ public class ProcessorArgumentResolver {
      * @param cast метод, вызовя который можно будет получить значение
      * @return значение выполненного метода
      */
-    private Object getMethodResultOfObject(Object data, Method cast) {
+    private @Nullable Object getMethodResultOfObject(Object data, @NotNull Method cast) {
         try {
             var access = cast.canAccess(data);
 
