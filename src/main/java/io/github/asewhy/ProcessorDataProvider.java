@@ -2,6 +2,7 @@ package io.github.asewhy;
 
 import io.github.asewhy.interfaces.iDataResolver;
 import io.github.asewhy.json.JsonGenerator;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -42,10 +43,9 @@ public class ProcessorDataProvider {
      * @param provider поставщик, данные которого нужно так-же учитывать при разрешении зависимостей
      * @return текущий поставщик данных
      */
-    public ProcessorDataProvider provide(ProcessorDataProvider provider) {
+    public ProcessorDataProvider provide(@NotNull ProcessorDataProvider provider) {
         this.resolvers.putAll(provider.resolvers); return this;
     }
-
 
     /**
      * Получить набор данных по значению класса

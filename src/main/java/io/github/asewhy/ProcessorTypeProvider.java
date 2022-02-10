@@ -47,7 +47,20 @@ public class ProcessorTypeProvider implements iProvider {
         this.classes.putAll(classes);
         this.binds.putAll(binds);
         this.resultClasses.putAll(resultClasses);
-        this.descriptions.putAll(descriptions);
+
+        //
+        // Добавляем описания
+        //
+        for(var subspace: descriptions.entrySet()) {
+            var key = subspace.getKey();
+            var description = subspace.getValue();
+
+            if(this.subspaces.containsKey(key)) {
+                this.descriptions.get(key).putAll(description);
+            } else {
+                this.descriptions.put(key, description);
+            }
+        }
 
         //
         // Сортируем названия тегов по возростанию, ещё на этапе добавления
@@ -143,13 +156,21 @@ public class ProcessorTypeProvider implements iProvider {
 
             if(Objects.equals(subspace, MAIN_SUBSPACE)) {
                 for(var tag: tags) {
-                    result.put(tag, getTagDescription(subspace, tag));
+                    var computed = getTagDescription(subspace, tag);
+
+                    if(computed != null) {
+                        result.put(tag, computed);
+                    }
                 }
             } else {
                 var subMap = new HashMap<String, String>();
 
                 for(var tag: tags) {
-                    subMap.put(tag, getTagDescription(subspace, tag));
+                    var computed = getTagDescription(subspace, tag);
+
+                    if(computed != null) {
+                        subMap.put(tag, computed);
+                    }
                 }
 
                 result.put(subspace, subMap);

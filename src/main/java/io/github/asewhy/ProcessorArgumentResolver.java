@@ -54,6 +54,17 @@ public class ProcessorArgumentResolver {
     }
 
     /**
+     * Получить динамические данные из поставщика, для получения данные должны поставлятся поставщиком.
+     *
+     * @param clazz тип, по которому нужно получить данные из поставщика
+     * @param <T> тип данных для получения
+     * @return найденные данные, если они ранее не поставлялись то null
+     */
+    public <T> T resolve(Class<T> clazz) {
+        return dataProvider.resolve(clazz);
+    }
+
+    /**
      * Поставлять динамические данных
      *
      * @param clazz класс бинд для которого происходит
@@ -61,7 +72,7 @@ public class ProcessorArgumentResolver {
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> ProcessorArgumentResolver resolve(Class<T> clazz, iDataResolver<T> resolver) {
+    public <T> ProcessorArgumentResolver provide(Class<T> clazz, iDataResolver<T> resolver) {
         dataProvider.provide(clazz, resolver); return this;
     }
 
@@ -71,7 +82,7 @@ public class ProcessorArgumentResolver {
      * @param object объект для добавления
      * @return себя
      */
-    public ProcessorArgumentResolver resolve(Object object) {
+    public ProcessorArgumentResolver provide(Object object) {
         dataProvider.provide(ReflectionUtils.skipAnonClasses(object.getClass()), object); return this;
     }
 
@@ -81,7 +92,7 @@ public class ProcessorArgumentResolver {
      * @param resolver другой набор данных
      * @return себя
      */
-    public ProcessorArgumentResolver resolve(@NotNull ProcessorArgumentResolver resolver) {
+    public ProcessorArgumentResolver provide(@NotNull ProcessorArgumentResolver resolver) {
         dataProvider.provide(resolver.dataProvider); return this;
     }
 
@@ -132,6 +143,8 @@ public class ProcessorArgumentResolver {
             return result;
         } catch (IllegalAccessException | InvocationTargetException e) {
             return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Error when call " + cast.getName());
         }
     }
 

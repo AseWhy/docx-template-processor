@@ -55,6 +55,17 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
     }
 
     /**
+     * Получить динамические данные из поставщика, для получения данные должны поставлятся поставщиком.
+     *
+     * @param clazz тип, по которому нужно получить данные из поставщика
+     * @param <T> тип данных для получения
+     * @return найденные данные, если они ранее не поставлялись то null
+     */
+    public <T> T resolve(Class<T> clazz) {
+        return this.resolver.resolve(clazz);
+    }
+
+    /**
      * Поставлять динамические данных
      *
      * @param clazz класс бинд для которого происходит
@@ -62,8 +73,8 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> SequenceResolveTagProcessor resolve(Class<T> clazz, iDataResolver<T> resolver) {
-        this.resolver.resolve(clazz, resolver); return this;
+    public <T> SequenceResolveTagProcessor provide(Class<T> clazz, iDataResolver<T> resolver) {
+        this.resolver.provide(clazz, resolver); return this;
     }
 
     /**
@@ -72,8 +83,8 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
      * @param object объект для добавления
      * @return себя
      */
-    public SequenceResolveTagProcessor resolve(Object object) {
-        this.resolver.resolve(object); return this;
+    public SequenceResolveTagProcessor provide(Object object) {
+        this.resolver.provide(object); return this;
     }
 
     /**
@@ -82,8 +93,8 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
      * @param resolver другой набор данных
      * @return себя
      */
-    public SequenceResolveTagProcessor resolve(ProcessorArgumentResolver resolver) {
-        this.resolver.resolve(resolver); return this;
+    public SequenceResolveTagProcessor provide(ProcessorArgumentResolver resolver) {
+        this.resolver.provide(resolver); return this;
     }
 
     /**

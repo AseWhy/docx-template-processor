@@ -300,6 +300,16 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
         this.classes.putAll(classes);
         this.resultClasses.putAll(resultClasses);
 
+        for(var subspace: descriptions.entrySet()) {
+            var key = subspace.getKey();
+            var description = subspace.getValue();
+
+            if(this.subspaces.containsKey(key)) {
+                this.descriptions.get(key).putAll(description);
+            } else {
+                this.descriptions.put(key, description);
+            }
+        }
 
         for(var subspace: subspaces.entrySet()) {
             var key = subspace.getKey();
