@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("unchecked")
 @Log4j2
 @Getter
 @Setter
@@ -58,8 +59,8 @@ public abstract class BaseDocxProcessor implements iDocxProcessor {
      * @param <T> тип для поиска
      */
     protected <T> void getAllElementFromObject(List<T> stack, Object obj, Class<T> toSearch, Set<Object> excludes) {
-        if (obj instanceof JAXBElement JAXBObject) {
-            obj = JAXBObject.getValue();
+        if (obj instanceof JAXBElement<?>) {
+            obj = ((JAXBElement<Object>) obj).getValue();
         }
 
         if(excludes.contains(obj)) {
@@ -68,7 +69,9 @@ public abstract class BaseDocxProcessor implements iDocxProcessor {
 
         if (obj.getClass().equals(toSearch)) {
             stack.add((T) obj);
-        } else if (obj instanceof ContentAccessor accessor) {
+        } else if (obj instanceof ContentAccessor) {
+            var accessor = (ContentAccessor) obj;
+
             for(var current: accessor.getContent()) {
                 if (current == null) {
                     continue;

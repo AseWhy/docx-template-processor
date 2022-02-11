@@ -193,10 +193,10 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
      * @return generic тип коллекции
      */
     private Class<?> requireGeneric(AccessibleObject collection, String tag) {
-        if(collection instanceof Field field) {
-            return Objects.requireNonNull(ReflectionUtils.findXGeneric(field), "Cannot find generic of " + tag);
-        } else if(collection instanceof Method method) {
-            return Objects.requireNonNull(ReflectionUtils.findXGeneric(method), "Cannot find generic of " + tag);
+        if(collection instanceof Field) {
+            return Objects.requireNonNull(ReflectionUtils.findXGeneric((Field) collection), "Cannot find generic of " + tag);
+        } else if(collection instanceof Method) {
+            return Objects.requireNonNull(ReflectionUtils.findXGeneric((Method) collection), "Cannot find generic of " + tag);
         } else {
             throw new RuntimeException("Unknown collection type.");
         }

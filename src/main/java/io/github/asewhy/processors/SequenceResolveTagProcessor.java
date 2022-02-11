@@ -118,13 +118,13 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
             return "";
         }
 
-        if(value instanceof Number number) {
-            if(value instanceof Float fl) {
-                return String.format("%.2f", fl);
-            } else if(value instanceof Double dbl) {
-                return String.format("%.2f", dbl);
+        if(value instanceof Number) {
+            if(value instanceof Float) {
+                return String.format("%.2f", value);
+            } else if(value instanceof Double) {
+                return String.format("%.2f", value);
             } else {
-                return String.valueOf(number);
+                return String.valueOf(value);
             }
         }
 
@@ -191,8 +191,8 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
 
             var value = resolver.resolve(key);
 
-            if(value instanceof Collection<?> collection) {
-                return collection.size();
+            if(value instanceof Collection<?>) {
+                return ((Collection<?>) value).size();
             } else {
                 return 0;
             }

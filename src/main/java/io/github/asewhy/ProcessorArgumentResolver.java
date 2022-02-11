@@ -158,7 +158,9 @@ public class ProcessorArgumentResolver {
      * @throws IllegalAccessException в случае ошибки
      */
     private Object getDataOfAccessible(String field, Object data, AccessibleObject found) throws IllegalAccessException {
-        if(found instanceof Field cast) {
+        if(found instanceof Field) {
+            var cast = (Field) found;
+
             if(!Modifier.isStatic(cast.getModifiers())) {
                 if (data != null) {
                     var result = getPropertyOfObject(data, cast);
@@ -172,7 +174,9 @@ public class ProcessorArgumentResolver {
             }
 
             throw new IllegalAccessException("Cannot find resolved dataset for field '" + field + "' for field '" + cast.getName() + "' in datasets " + this.dataProvider.getDebugDumpData());
-        } else if(found instanceof Method cast) {
+        } else if(found instanceof Method) {
+            var cast = (Method) found;
+
             if(!Modifier.isStatic(cast.getModifiers())) {
                 if (data != null) {
                     var result = getMethodResultOfObject(data, cast);
@@ -225,9 +229,9 @@ public class ProcessorArgumentResolver {
             throw new IllegalAccessException("Cannot find provided type for field '" + cacheKey + "'");
         }
 
-        if(root instanceof Collection<?> collection) {
+        if(root instanceof Collection<?>) {
             if(!datacache.containsKey(listKey)) {
-                datacache.put(listKey, new ArrayList<>(collection));
+                datacache.put(listKey, new ArrayList<>((Collection<?>) root));
             }
         }
 

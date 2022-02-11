@@ -14,10 +14,10 @@ public class TreeResult {
     public TreeResult(AccessibleObject accessible) {
         this.accessible = accessible;
 
-        if(accessible instanceof Field field) {
-            this.clazz = field.getType();
-        } else if(accessible instanceof Method field) {
-            this.clazz = field.getReturnType();
+        if(accessible instanceof Field) {
+            this.clazz = ((Field) accessible).getType();
+        } else if(accessible instanceof Method) {
+            this.clazz = ((Method) accessible).getReturnType();
         } else {
             throw new RuntimeException("Unknown accessible type");
         }

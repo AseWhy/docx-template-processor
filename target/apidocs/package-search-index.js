@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.github.asewhy"},{"l":"io.github.asewhy.base"},{"l":"io.github.asewhy.exceptions"},{"l":"io.github.asewhy.interfaces"},{"l":"io.github.asewhy.processors"},{"l":"io.github.asewhy.support"}]
