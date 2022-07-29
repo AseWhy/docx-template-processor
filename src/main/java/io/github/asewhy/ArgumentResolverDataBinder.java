@@ -1,6 +1,7 @@
 package io.github.asewhy;
 
 import io.github.asewhy.interfaces.iProvider;
+import io.github.asewhy.support.DescriptionEntry;
 import io.github.asewhy.support.TreeResult;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
     private final Map<String, Class<?>> resultClasses = new HashMap<>();
     private final Map<String, AccessibleObject> binds = new HashMap<>();
     private final Map<String, List<String>> subspaces = new HashMap<>();
-    private final Map<String, Map<String, String>> descriptions = new HashMap<>();
+    private final Map<String, Map<String, DescriptionEntry>> descriptions = new HashMap<>();
     private final String namespace;
     private final String subspace;
 
@@ -55,7 +56,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
      * @param tag тег для добавления
      * @param bind добавляемый биндинг
      */
-    private void addBind(String tag, String description, TreeResult bind) {
+    private void addBind(String tag, DescriptionEntry description, @NotNull TreeResult bind) {
         var key = namespace != null ? namespace + "#" + tag : tag;
 
         this.resultClasses.put(key, bind.getClazz());
@@ -89,7 +90,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
      * @param description описание
      * @return текущая фабрика
      */
-    public ArgumentResolverDataBinder<T, P> desc(String tag, String description) {
+    public ArgumentResolverDataBinder<T, P> desc(String tag, DescriptionEntry description) {
         this.descriptions.get(this.subspace).put(tag, description); return this;
     }
 
@@ -124,7 +125,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
         var bind = findTree(this.clazz, fieldOrMethodName);
 
         if(bind != null) {
-            addBind(tag, description, bind);
+            addBind(tag, DescriptionEntry.of(description, clazz), bind);
         } else {
             throw new NoSuchFieldException("Cannot find tag " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
         }
@@ -135,7 +136,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
     /**
      * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
      * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
-     *
+     * <p>
      * Если производится биндинг, на класс, поставляемый коллекцией, то необходимо указать префикс поля, которое
      * поставляет коллекцию объектов этого класса. Допустим поле root класса N имеет тип X, в самом классе X есть поле root
      * поэтому, чтобы получить доступ именно к полю X.root нужно писать root.root
@@ -153,7 +154,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
     /**
      * Биндит тег на значение поля класс. То-есть при запросе поля `tag` проводником будет возвращено значение поля
      * `reference` таким образом предоставляя удобную прослойку между обработчиком и объектом на который нацелен данный биндер.
-     *
+     * <p>
      * Если производится биндинг, на класс, поставляемый коллекцией, то необходимо указать префикс поля, которое
      * поставляет коллекцию объектов этого класса. Допустим поле root класса N имеет тип X, в самом классе X есть поле root
      * поэтому, чтобы получить доступ именно к полю X.root нужно писать root.root
@@ -173,7 +174,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
         var bind = findTree(this.clazz, fieldOrMethodName);
 
         if(bind != null) {
-            addBind(tag, description, bind);
+            addBind(tag, DescriptionEntry.of(description, clazz), bind);
         } else {
             throw new NoSuchFieldException("Cannot find field " + fieldOrMethodName + " in class " + this.clazz.getName() + ".");
         }
@@ -294,7 +295,7 @@ public final class ArgumentResolverDataBinder<T, P extends iProvider> implements
         @NotNull Map<String, Class<?>> resultClasses,
         @NotNull Map<String, List<String>> subspaces,
         @NotNull Map<String, AccessibleObject> binds,
-        @NotNull Map<String, Map<String, String>> descriptions
+        @NotNull Map<String, Map<String, DescriptionEntry>> descriptions
     ) {
         this.binds.putAll(binds);
         this.classes.putAll(classes);

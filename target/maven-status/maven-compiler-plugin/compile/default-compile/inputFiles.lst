@@ -7,7 +7,9 @@
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/processors/SequenceResolveTagProcessor.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/TreeResult.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/ProcessorArgumentResolver.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/DescriptionEntry.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/exceptions/ProcessorException.java
+/home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/support/SubspaceEntry.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/ProcessorDataProvider.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/ArgumentResolverDataBinder.java
 /home/astecom/git/docx-template-processor/src/main/java/io/github/asewhy/interfaces/iDataResolver.java

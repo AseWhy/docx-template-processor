@@ -1,11 +1,14 @@
 package io.github.asewhy;
 
 import io.github.asewhy.interfaces.iProvider;
+import io.github.asewhy.support.DescriptionEntry;
+import io.github.asewhy.support.SubspaceEntry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.AccessibleObject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ProcessorTypeProvider implements iProvider {
@@ -15,7 +18,7 @@ public class ProcessorTypeProvider implements iProvider {
     private final Map<String, Class<?>> resultClasses = new HashMap<>();
     private final Map<String, AccessibleObject> binds = new HashMap<>();
     private final Map<String, List<String>> subspaces = new HashMap<>();
-    private final Map<String, Map<String, String>> descriptions = new HashMap<>();
+    private final Map<String, Map<String, DescriptionEntry>> descriptions = new HashMap<>();
 
     /**
      * Представляет собой набор типов.
@@ -42,7 +45,7 @@ public class ProcessorTypeProvider implements iProvider {
         @NotNull Map<String, Class<?>> resultClasses,
         @NotNull Map<String, List<String>> subspaces,
         @NotNull Map<String, AccessibleObject> binds,
-        @NotNull Map<String, Map<String, String>> descriptions
+        @NotNull Map<String, Map<String, DescriptionEntry>> descriptions
     ) {
         this.classes.putAll(classes);
         this.binds.putAll(binds);
@@ -63,7 +66,7 @@ public class ProcessorTypeProvider implements iProvider {
         }
 
         //
-        // Сортируем названия тегов по возростанию, ещё на этапе добавления
+        // Сортируем названия тегов по возрастанию, ещё на этапе добавления
         //
         for(var subspace: subspaces.entrySet()) {
             var key = subspace.getKey();
@@ -149,8 +152,9 @@ public class ProcessorTypeProvider implements iProvider {
      */
     public Map<String, Object> getDescriptionMap() {
         var result = new HashMap<String, Object>();
+        var spaces = subspaces.entrySet().stream().sorted((a, b) -> Objects.equals(a.getKey(), MAIN_SUBSPACE) ? -1 : Objects.equals(b.getKey(), MAIN_SUBSPACE) ? 0 : 1).collect(Collectors.toList());
 
-        for(var current: subspaces.entrySet()) {
+        for(var current: spaces) {
             var subspace = current.getKey();
             var tags = current.getValue();
 
@@ -163,7 +167,7 @@ public class ProcessorTypeProvider implements iProvider {
                     }
                 }
             } else {
-                var subMap = new HashMap<String, String>();
+                var subMap = new HashMap<String, DescriptionEntry>();
 
                 for(var tag: tags) {
                     var computed = getTagDescription(subspace, tag);
@@ -173,7 +177,7 @@ public class ProcessorTypeProvider implements iProvider {
                     }
                 }
 
-                result.put(subspace, subMap);
+                result.put(subspace, SubspaceEntry.of((DescriptionEntry) result.get(subspace), subMap));
             }
         }
 
@@ -183,11 +187,11 @@ public class ProcessorTypeProvider implements iProvider {
     /**
      * Получить описание для
      *
-     * @param subspace подространство тегов
+     * @param subspace подпространство тегов
      * @param tag тег
-     * @return описание тега в продпространстве
+     * @return описание тега в прод пространстве
      */
-    public String getTagDescription(String subspace, String tag) {
+    public DescriptionEntry getTagDescription(String subspace, String tag) {
         var descSpace = this.descriptions.get(subspace);
 
         if(descSpace != null) {
