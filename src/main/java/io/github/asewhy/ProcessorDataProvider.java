@@ -75,9 +75,6 @@ public class ProcessorDataProvider {
             var interfaces = target.getInterfaces();
             var provider = current.getValue();
             var provided = provider.get();
-            var providedClass = provided.getClass();
-            var fields = providedClass.getDeclaredFields();
-            var methods = providedClass.getDeclaredMethods();
 
             gen.writeStartObject(target.getSimpleName());
             gen.writeField("class", target.getCanonicalName());
@@ -96,23 +93,29 @@ public class ProcessorDataProvider {
                 gen.writeEndArray();
             }
 
-            for(var field: fields) {
-                try {
-                    if(!Modifier.isStatic(field.getModifiers())) {
-                        var accessible = field.canAccess(provided);
-                        field.setAccessible(true);
-                        gen.writeField(field.getName(), field.get(provided));
-                        field.setAccessible(accessible);
-                    }
-                } catch (IllegalAccessException e) {
-                    gen.writeField(field.getName(), "<cannot resolve value> ");
-                }
-            }
+            if(provided != null) {
+                var providedClass = provided.getClass();
+                var fields = providedClass.getDeclaredFields();
+                var methods = providedClass.getDeclaredMethods();
 
-            for(var method: methods) {
-                var args = method.getParameterTypes();
-                var name = method.getName() + "(" + Arrays.stream(args).map(Class::getSimpleName).collect(Collectors.joining(", ")) + ")";
-                gen.writeField(name, "{ /* Some Code Here */ }");
+                for (var field : fields) {
+                    try {
+                        if (!Modifier.isStatic(field.getModifiers())) {
+                            var accessible = field.canAccess(provided);
+                            field.setAccessible(true);
+                            gen.writeField(field.getName(), field.get(provided));
+                            field.setAccessible(accessible);
+                        }
+                    } catch (IllegalAccessException e) {
+                        gen.writeField(field.getName(), "<cannot resolve value> ");
+                    }
+                }
+
+                for (var method : methods) {
+                    var args = method.getParameterTypes();
+                    var name = method.getName() + "(" + Arrays.stream(args).map(Class::getSimpleName).collect(Collectors.joining(", ")) + ")";
+                    gen.writeField(name, "{ /* Some Code Here */ }");
+                }
             }
 
             gen.writeEndObject();
