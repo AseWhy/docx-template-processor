@@ -1,7 +1,7 @@
 package io.github.asewhy.base;
 
 import io.github.asewhy.exceptions.ProcessorException;
-import io.github.asewhy.interfaces.iDocxProcessor;
+import io.github.asewhy.interfaces.DocxProcessor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +19,7 @@ import java.util.Set;
 @Log4j2
 @Getter
 @Setter
-public abstract class BaseDocxProcessor implements iDocxProcessor {
+public abstract class BaseDocxProcessor implements DocxProcessor {
     protected boolean loggable = false;
 
     /**

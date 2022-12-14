@@ -1,6 +1,6 @@
 package io.github.asewhy;
 
-import io.github.asewhy.interfaces.iProvider;
+import io.github.asewhy.interfaces.TypeProvider;
 import io.github.asewhy.support.DescriptionEntry;
 import io.github.asewhy.support.TreeResult;
 import org.jetbrains.annotations.Contract;
@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public final class ArgumentResolverDataBinder<T, P extends iProvider> implements iProvider {
+public final class ArgumentResolverDataBinder<T, P extends TypeProvider> implements TypeProvider {
     private static final Pattern tagNamePattern = Pattern.compile("[aA-zZаА-яЯ]+");
 
     private final P parent;

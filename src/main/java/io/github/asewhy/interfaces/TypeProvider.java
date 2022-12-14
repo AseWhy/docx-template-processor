@@ -7,7 +7,7 @@ import java.lang.reflect.AccessibleObject;
 import java.util.List;
 import java.util.Map;
 
-public interface iProvider {
+public interface TypeProvider {
     void provide(
         @NotNull Map<String, Class<?>> classes,
         @NotNull Map<String, Class<?>> resultClasses,

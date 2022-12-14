@@ -1,6 +1,6 @@
 package io.github.asewhy;
 
-import io.github.asewhy.interfaces.iDataResolver;
+import io.github.asewhy.interfaces.DataResolver;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +72,7 @@ public class ProcessorArgumentResolver {
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> ProcessorArgumentResolver provide(Class<T> clazz, iDataResolver<T> resolver) {
+    public <T> ProcessorArgumentResolver provide(Class<T> clazz, DataResolver<T> resolver) {
         dataProvider.provide(clazz, resolver); return this;
     }
 

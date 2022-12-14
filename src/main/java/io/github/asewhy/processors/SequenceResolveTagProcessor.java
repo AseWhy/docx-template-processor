@@ -4,7 +4,7 @@ import io.github.asewhy.ProcessorArgumentResolver;
 import io.github.asewhy.ProcessorDataProvider;
 import io.github.asewhy.ProcessorTypeProvider;
 import io.github.asewhy.base.BaseSequenceTagProcessor;
-import io.github.asewhy.interfaces.iDataResolver;
+import io.github.asewhy.interfaces.DataResolver;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -74,7 +74,7 @@ public final class SequenceResolveTagProcessor extends BaseSequenceTagProcessor 
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> SequenceResolveTagProcessor provide(Class<T> clazz, iDataResolver<T> resolver) {
+    public <T> SequenceResolveTagProcessor provide(Class<T> clazz, DataResolver<T> resolver) {
         this.resolver.provide(clazz, resolver); return this;
     }
 

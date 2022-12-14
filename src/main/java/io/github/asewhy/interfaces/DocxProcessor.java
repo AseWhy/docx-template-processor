@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.Collection;
 
 @SuppressWarnings("unused")
-public interface iDocxProcessor {
+public interface DocxProcessor {
     /**
      * Обрабатывает шаблон, внося в него корректировки в соответствии с тегами
      *

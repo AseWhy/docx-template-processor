@@ -1,6 +1,6 @@
 package io.github.asewhy;
 
-import io.github.asewhy.interfaces.iProvider;
+import io.github.asewhy.interfaces.TypeProvider;
 import io.github.asewhy.support.DescriptionEntry;
 import io.github.asewhy.support.SubspaceEntry;
 import org.jetbrains.annotations.Contract;
@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class ProcessorTypeProvider implements iProvider {
+public class ProcessorTypeProvider implements TypeProvider {
     public final static String MAIN_SUBSPACE = "#MAIN";
 
     private final Map<String, Class<?>> classes = new HashMap<>();

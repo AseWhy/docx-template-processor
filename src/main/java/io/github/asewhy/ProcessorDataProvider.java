@@ -1,6 +1,6 @@
 package io.github.asewhy;
 
-import io.github.asewhy.interfaces.iDataResolver;
+import io.github.asewhy.interfaces.DataResolver;
 import io.github.asewhy.json.JsonGenerator;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "UnusedReturnValue"})
 public class ProcessorDataProvider {
-    private final HashMap<Class<?>, iDataResolver<?>> resolvers = new HashMap<>();
+    private final HashMap<Class<?>, DataResolver<?>> resolvers = new HashMap<>();
 
     /**
      * Поставлять динамические данных
@@ -21,7 +21,7 @@ public class ProcessorDataProvider {
      * @param <T> тип данных, к которому должен принадлежать и класс и обработчик
      * @return текущий поставщик данных
      */
-    public <T> ProcessorDataProvider provide(Class<T> clazz, iDataResolver<T> resolver) {
+    public <T> ProcessorDataProvider provide(Class<T> clazz, DataResolver<T> resolver) {
         this.resolvers.put(clazz, resolver); return this;
     }
 
