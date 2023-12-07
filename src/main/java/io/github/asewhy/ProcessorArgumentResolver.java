@@ -104,6 +104,10 @@ public class ProcessorArgumentResolver {
      * @return значение поля
      */
     private @Nullable Object getPropertyOfObject(Object data, @NotNull Field cast) {
+        if (data == null) {
+            return null;
+        }
+
         try {
             var access = cast.canAccess(data);
 
@@ -129,6 +133,10 @@ public class ProcessorArgumentResolver {
      * @return значение выполненного метода
      */
     private @Nullable Object getMethodResultOfObject(Object data, @NotNull Method cast) {
+        if (data == null) {
+            return null;
+        }
+
         try {
             var access = cast.canAccess(data);
 
@@ -162,34 +170,26 @@ public class ProcessorArgumentResolver {
             var cast = (Field) found;
 
             if(!Modifier.isStatic(cast.getModifiers())) {
-                if (data != null) {
-                    var result = getPropertyOfObject(data, cast);
+                var result = getPropertyOfObject(data, cast);
 
-                    datacache.put(field, result);
+                datacache.put(field, result);
 
-                    return result;
-                }
+                return result;
             } else {
                 throw new IllegalAccessException("Field '" + field + "' is static and cannot be computed.");
             }
-
-            throw new IllegalAccessException("Cannot find resolved dataset for field '" + field + "' for field '" + cast.getName() + "' in datasets " + this.dataProvider.getDebugDumpData());
         } else if(found instanceof Method) {
             var cast = (Method) found;
 
             if(!Modifier.isStatic(cast.getModifiers())) {
-                if (data != null) {
-                    var result = getMethodResultOfObject(data, cast);
+                var result = getMethodResultOfObject(data, cast);
 
-                    datacache.put(field, result);
+                datacache.put(field, result);
 
-                    return result;
-                }
+                return result;
             } else {
                 throw new IllegalAccessException("Field '" + field + "' is static and cannot be called.");
             }
-
-            throw new IllegalAccessException("Cannot find resolved dataset for field '" + field + "' for method '" + cast.getName() + "' in datasets " + this.dataProvider.getDebugDumpData());
         }
 
         throw new IllegalAccessException("Cannot find provided type for field '" + field + "'");
